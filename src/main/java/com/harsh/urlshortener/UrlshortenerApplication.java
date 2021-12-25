@@ -1,6 +1,5 @@
 package com.harsh.urlshortener;
 
-import com.harsh.urlshortener.repo.UrlShortenerRepository;
 import com.harsh.urlshortener.service.UrlShortenerService;
 import com.harsh.urlshortener.service.impl.UrlShortenerServiceImpl;
 

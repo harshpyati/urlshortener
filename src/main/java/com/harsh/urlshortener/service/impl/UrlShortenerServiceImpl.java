@@ -1,16 +1,11 @@
 package com.harsh.urlshortener.service.impl;
 
-import java.net.URI;
-import java.util.Optional;
 import java.util.UUID;
-
 import com.harsh.urlshortener.domain.UrlInfo;
 import com.harsh.urlshortener.repo.UrlShortenerRepository;
 import com.harsh.urlshortener.service.UrlShortenerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 public class UrlShortenerServiceImpl implements UrlShortenerService {
 
