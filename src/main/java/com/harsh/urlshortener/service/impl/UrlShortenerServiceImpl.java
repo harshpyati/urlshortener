@@ -12,7 +12,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Autowired
     private UrlShortenerRepository urlShortenerRepository;
 
-    public void validateUrl(String url) {
+    public void validateUrl(UrlInfo urlInfo) {
     }
 
     public boolean checkIfShortenedUrlExists(String url) {
@@ -20,15 +20,17 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     }
 
     @Override
-    public UrlInfo shortenUrl(String url) {
-        validateUrl(url);
-        UrlInfo urlInfo = urlShortenerRepository.getByOriginalUrl(url);
+    public UrlInfo shortenUrl(UrlInfo uInfo) {
+        validateUrl(uInfo);
+        UrlInfo urlInfo = urlShortenerRepository.getByOriginalUrl(uInfo.getOriginalUrl());
         if (urlInfo == null) {
             String shortenUrl = "https://localhost:8080/" + UUID.randomUUID().toString();
             System.out.println(shortenUrl);
             urlInfo = new UrlInfo();
-            urlInfo.setOriginalUrl(url);
+            urlInfo.setOriginalUrl(uInfo.getOriginalUrl());
             urlInfo.setShortenedUrl(shortenUrl);
+            urlInfo.setCreatedTime(System.currentTimeMillis());
+            urlInfo.setRequiredDuration(uInfo.getRequiredDuration());
             urlShortenerRepository.save(urlInfo);
         }
         return urlInfo;

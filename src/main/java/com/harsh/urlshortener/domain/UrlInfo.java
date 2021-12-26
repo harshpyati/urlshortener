@@ -15,4 +15,8 @@ public class UrlInfo {
     String originalUrl;
 
     String shortenedUrl;
+
+    Long createdTime;
+
+    Long requiredDuration;
 }
