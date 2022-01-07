@@ -3,6 +3,7 @@ package com.harsh.urlshortener.controller;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.harsh.urlshortener.domain.ApiError;
 import com.harsh.urlshortener.domain.UrlInfo;
 import com.harsh.urlshortener.service.UrlShortenerService;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/redirect")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UrlRedirectController {
     @Autowired
     UrlShortenerService urlShortenerService;
@@ -35,7 +38,11 @@ public class UrlRedirectController {
             headers.setLocation(uri);
             return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
         }else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ApiError error = ApiError.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("Url with id " + id + " is not found")
+                .build();
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
 
     }
