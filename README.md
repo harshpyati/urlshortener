@@ -1,6 +1,6 @@
 This is a simple application to shorten urls. 
 
-www.youtube.com -> urlr.com/<random-id>
+www.youtube.com -> urlr.com/{{id}}
 
 **Architecture**: 
 
