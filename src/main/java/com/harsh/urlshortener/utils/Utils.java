@@ -1,5 +1,6 @@
 package com.harsh.urlshortener.utils;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 public class Utils {
@@ -14,5 +15,9 @@ public class Utils {
             System.out.println("failed to load props file " + PROPS_FILE);
         }
         return props;
+    }
+
+    public static boolean isNotNullOrEmpty(List<?> list) {
+        return list != null && !list.isEmpty();
     }
 }

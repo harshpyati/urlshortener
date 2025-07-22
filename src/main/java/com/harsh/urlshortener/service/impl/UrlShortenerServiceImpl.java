@@ -4,8 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.UUID;
+
 import com.harsh.urlshortener.domain.UrlInfo;
 import com.harsh.urlshortener.repo.UrlShortenerRepository;
+import com.harsh.urlshortener.service.IdEncoderService;
+import com.harsh.urlshortener.service.IdGenService;
 import com.harsh.urlshortener.service.UrlShortenerService;
 import com.harsh.urlshortener.utils.Utils;
 
@@ -16,42 +19,44 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Autowired
     private UrlShortenerRepository urlShortenerRepository;
 
-    public void validateUrl(UrlInfo urlInfo) {
-    }
+    @Autowired
+    private IdGenService idGenService;
 
-    public boolean checkIfShortenedUrlExists(String url) {
-        return false;
+    @Autowired
+    private IdEncoderService idEncoderService;
+
+    public void validateUrl(UrlInfo urlInfo) {
     }
 
     @Override
     public UrlInfo shortenUrl(UrlInfo uInfo) {
         validateUrl(uInfo);
-        UrlInfo urlInfo = urlShortenerRepository.getByOriginalUrl(uInfo.getOriginalUrl());
-        if (urlInfo == null) {
-            String shortenUrl = retrieveDomainFromProperties() + UUID.randomUUID().toString();
-            System.out.println(shortenUrl);
-            urlInfo = new UrlInfo();
-            urlInfo.setOriginalUrl(uInfo.getOriginalUrl());
-            urlInfo.setShortenedUrl(shortenUrl);
-            urlInfo.setCreatedTime(System.currentTimeMillis());
-            urlInfo.setRequiredDuration(uInfo.getRequiredDuration());
-            urlShortenerRepository.save(urlInfo);
-        }
-        return urlInfo;
+        int id = idGenService.generatePseudoRandomId();
+        String encodedString = idEncoderService.encodeId(id);
+        String shortenUrl = retrieveDomainFromProperties() + encodedString;
+
+        UrlInfo urlInfo = UrlInfo.builder()
+                .originalUrl(uInfo.getOriginalUrl())
+                .shortenedUrl(shortenUrl)
+                .createdTime(System.currentTimeMillis())
+                .requiredDuration(uInfo.getRequiredDuration())
+                .build();
+        return urlShortenerRepository.saveAndFlush(urlInfo);
+
     }
 
     @Override
     public UrlInfo redirect(String id) {
         String shortenedUrl = retrieveDomainFromProperties() + id;
-        UrlInfo urlInfo = urlShortenerRepository.getByShortenedUrl(shortenedUrl);
-        return urlInfo;
+        return urlShortenerRepository.getByShortenedUrl(shortenedUrl);
     }
 
-    private String retrieveDomainFromProperties(){
+    private String retrieveDomainFromProperties() {
         Properties props = Utils.getApplicationProperties();
-        if(props != null){
+        if (props != null) {
             return props.getProperty("domain");
-        } return null;
+        }
+        return null;
     }
 
 }
