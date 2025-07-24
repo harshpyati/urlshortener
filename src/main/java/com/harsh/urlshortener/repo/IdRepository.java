@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface IdRepository extends JpaRepository<URLIdRange, Integer> {
-    @Query("select id from #{#entityName}")
+    @Query(value = "select id from url_id_range where current != end_range", nativeQuery = true)
     List<Integer> getAllIds();
 }

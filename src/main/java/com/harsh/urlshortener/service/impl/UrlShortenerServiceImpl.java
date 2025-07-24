@@ -1,9 +1,6 @@
 package com.harsh.urlshortener.service.impl;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Properties;
-import java.util.UUID;
 
 import com.harsh.urlshortener.domain.UrlInfo;
 import com.harsh.urlshortener.repo.UrlShortenerRepository;
@@ -13,6 +10,7 @@ import com.harsh.urlshortener.service.UrlShortenerService;
 import com.harsh.urlshortener.utils.Utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 
 public class UrlShortenerServiceImpl implements UrlShortenerService {
 
@@ -24,6 +22,11 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Autowired
     private IdEncoderService idEncoderService;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaUrlTemplate;
+
+    private static final String KAFKA_TOPIC = "url_shortener";
 
     public void validateUrl(UrlInfo urlInfo) {
     }
@@ -42,12 +45,12 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
                 .requiredDuration(uInfo.getRequiredDuration())
                 .build();
         return urlShortenerRepository.saveAndFlush(urlInfo);
-
     }
 
     @Override
     public UrlInfo redirect(String id) {
         String shortenedUrl = retrieveDomainFromProperties() + id;
+        kafkaUrlTemplate.send(KAFKA_TOPIC, shortenedUrl);
         return urlShortenerRepository.getByShortenedUrl(shortenedUrl);
     }
 
